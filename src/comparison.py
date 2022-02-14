@@ -30,8 +30,8 @@ if mode == "comp":
     comp = np.intersect1d(human_np.view(dtype), extraction_np.view(dtype))
     comp = comp.view(human_np.dtype).reshape(-1, hcols)
     print(len(comp))
-    print(len(human))
-    print(len(comp)/len(human)*100)
+    print(len(human_np))
+    print(len(comp)/len(human_np)*100)
     np.savetxt(result_dir+"comp.txt", comp)
 
 elif mode == "back":
