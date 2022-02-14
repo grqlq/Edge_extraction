@@ -9,9 +9,7 @@ import time
 
 start = time.time()
 
-
-#ply = o3d.io.read_point_cloud("../data/7-Cloud-seg.ply")
-ply = o3d.io.read_point_cloud("../data/paper_3_rot.ply")
+ply = o3d.io.read_point_cloud("../data/input/paper_1_rot.ply")
 
 output_dir = "../paper/"
 
