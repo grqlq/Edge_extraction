@@ -34,7 +34,7 @@ else:
 
 #downsample
 ply = ply.voxel_down_sample(voxel_size=voxel)
-o3d.io.write_point_cloud(output_dir+"down.ply", ply)
+o3d.io.write_point_cloud(output_dir+"1_down.ply", ply)
 
 # floor filter
 ply_np = np.asarray(ply.points)
@@ -42,7 +42,7 @@ hist = np.histogram(ply_np[:,2], bins=bins)
 floor = np.array((np.where(hist[1][np.argmax(hist[0])+1]>ply_np[:,2]))).flatten()
 fil_z = np.delete(ply_np, floor, axis=0)
 
-np.savetxt(output_dir+"fil.txt", fil_z[:,:3])
+np.savetxt(output_dir+"2_fil.txt", fil_z[:,:3])
 
 ply = o3d.geometry.PointCloud()
 ply.points = o3d.utility.Vector3dVector(fil_z)
@@ -60,7 +60,7 @@ ply_np = np.concatenate([fil_z, sigma_value], 1)
 
 flat = np.array(np.where(ply_np[:,3]<thresh)).flatten()
 edge = np.delete(ply_np, flat, axis=0)
-np.savetxt(output_dir+"edge.txt", edge[:,:3])
+np.savetxt(output_dir+"3_edge.txt", edge[:,:3])
 
 # touch points
 hist_edge = np.histogram(edge[:,1])
@@ -69,12 +69,12 @@ hist_edge_min = hist_edge[1][np.argmax(hist_edge[0])]
 touch = np.array((np.where((hist_edge_max>edge[:,1])&(hist_edge_min<edge[:,1])))).flatten()
 touch_edge = np.array(edge[touch])
 
-np.savetxt(output_dir+"touch_edge.txt", touch_edge[:,:3])
+np.savetxt(output_dir+"4_touch_edge.txt", touch_edge[:,:3])
 
 #extraction without wall
 wo_np = np.array((np.where(hist_edge_min>fil_z[:,1]))).flatten()
 wo_np = np.array(fil_z[wo_np])
-np.savetxt(output_dir+"wo_touch_edge.txt", wo_np[:,:3])
+np.savetxt(output_dir+"5_wo_touch_edge.txt", wo_np[:,:3])
 
 #DBSCAN clustering
 wo = o3d.geometry.PointCloud()
@@ -91,7 +91,7 @@ colors = plt.get_cmap("tab20")(labels / (max_label if max_label > 0 else 1))
 colors[labels < 0] = 0
 wo.colors = o3d.utility.Vector3dVector(colors[:, :3])
 
-o3d.io.write_point_cloud(output_dir+"DBSCAN.ply", wo)
+o3d.io.write_point_cloud(output_dir+"6_DBSCAN.ply", wo)
 
 #human extraction
 candidate = np.empty((0,4))
@@ -106,7 +106,7 @@ if count == 1:
     np.savetxt(output_dir+"extraction.txt", candidate[:,:3])
     human_op = o3d.geometry.PointCloud()
     human_op.points = o3d.utility.Vector3dVector(candidate[:,:3])
-    o3d.io.write_point_cloud(output_dir+"extraction.ply", human_op)
+    o3d.io.write_point_cloud(output_dir+"7_extraction.ply", human_op)
     end = time.time()
     process = end - start
     print(process)
@@ -129,10 +129,10 @@ for i in range(int(candidate[np.argmax(candidate[:,3]), 3])+1):
 for i in range(len(flag)):
     human = candidate[np.where(candidate[:,3]==flag[i])]
 
-np.savetxt(output_dir+"extraction.txt", human[:,:3])
+np.savetxt(output_dir+"7_extraction.txt", human[:,:3])
 human_op = o3d.geometry.PointCloud()
 human_op.points = o3d.utility.Vector3dVector(human[:,:3])
-o3d.io.write_point_cloud(output_dir+"extraction.ply", human_op)
+o3d.io.write_point_cloud(output_dir+"7_extraction.ply", human_op)
 
 end = time.time()
 process = end - start
