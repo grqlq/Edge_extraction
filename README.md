@@ -1,5 +1,6 @@
-# Edge_extraction.py
+# Edge_extraction
+Edge_extraction.py
 実行用ファイル
 
-#comparision.py
+comparision.py
 精度算出用ファイル
