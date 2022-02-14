@@ -32,9 +32,7 @@ else:
     shutil.rmtree(output_dir)
     os.mkdir(output_dir)
 
-os.mkdir(output_dir+'cluster')
-
-#1st stage
+#downsample
 ply = ply.voxel_down_sample(voxel_size=voxel)
 o3d.io.write_point_cloud(output_dir+"down.ply", ply)
 
@@ -43,10 +41,6 @@ ply_np = np.asarray(ply.points)
 hist = np.histogram(ply_np[:,2], bins=bins)
 floor = np.array((np.where(hist[1][np.argmax(hist[0])+1]>ply_np[:,2]))).flatten()
 fil_z = np.delete(ply_np, floor, axis=0)
-
-hist = np.histogram(ply_np[:,0], bins=bins)
-floor = np.array((np.where(hist[1][np.argmax(hist[0])+1]>ply_np[:,2]))).flatten()
-fil_xz = np.delete(ply_np, floor, axis=0)
 
 np.savetxt(output_dir+"fil.txt", fil_z[:,:3])
 
@@ -77,10 +71,12 @@ touch_edge = np.array(edge[touch])
 
 np.savetxt(output_dir+"touch_edge.txt", touch_edge[:,:3])
 
+#extraction without wall
 wo_np = np.array((np.where(hist_edge_min>fil_z[:,1]))).flatten()
 wo_np = np.array(fil_z[wo_np])
 np.savetxt(output_dir+"wo_touch_edge.txt", wo_np[:,:3])
 
+#DBSCAN clustering
 wo = o3d.geometry.PointCloud()
 wo.points = o3d.utility.Vector3dVector(wo_np[:,:3])
 
@@ -97,6 +93,7 @@ wo.colors = o3d.utility.Vector3dVector(colors[:, :3])
 
 o3d.io.write_point_cloud(output_dir+"DBSCAN.ply", wo)
 
+#human extraction
 candidate = np.empty((0,4))
 count=0
 for i in range(max_label):
