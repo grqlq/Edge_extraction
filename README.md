@@ -1,4 +1,3 @@
-# Edge_extraction
 # Edge_extraction.py
 実行用ファイル
 
